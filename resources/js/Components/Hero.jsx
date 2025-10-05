@@ -5,19 +5,19 @@ export default function Hero({
   showContent = true,
   heroSrc = '/images/Hero.jpg',
   fallback = '/images/Fallback.png',
-  imageClass = 'w-full h-64 object-cover', 
+  imageClass = 'w-full h-64 object-cover',
 }) {
   return (
-    <section className="grid lg:grid-cols-2 gap-10 items-center">
+    <section className="mk-page-header mk-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 40, alignItems: 'center' }}>
       {showContent && (
         <div>
-          {title && <h1 className="text-3xl font-bold">{title}</h1>}
-          {subtitle && <p className="mt-4 text-gray-700">{subtitle}</p>}
+          {title && <h1 className="mk-title">{title}</h1>}
+          {subtitle && <p className="mk-card-description" style={{ marginTop: 12 }}>{subtitle}</p>}
           {children}
         </div>
       )}
 
-      <div className="rounded-lg overflow-hidden border">
+      <div className="mk-card mk-card-image" style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.04)' }}>
         <img
           src={heroSrc}
           alt={title ?? 'Imagen principal'}

@@ -4,12 +4,12 @@ import Nav from '@/Components/Nav';
 
 export default function Header({ auth, canLogin, canRegister }) {
   return (
-    <header className="border-b bg-white">
-      <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/" aria-label="Ir al inicio" className="inline-flex items-center">
-            <ApplicationLogo className="h-8 w-8 text-indigo-600" />
-            <span className="ml-3 text-lg font-semibold">Huellas Solidarias</span>
+    <header className="mk-navbar">
+      <div className="mk-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Link href={route('home')} aria-label="Ir al inicio" className="mk-navbar-brand inline-flex items-center">
+            <ApplicationLogo className="h-8 w-8" />
+            <span className="mk-brand-title">Huellas Solidarias</span>
           </Link>
         </div>
 

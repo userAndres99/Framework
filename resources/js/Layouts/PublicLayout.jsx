@@ -9,9 +9,9 @@ export default function PublicLayout({ children, title = 'Huellas Solidarias', a
         <title>{title}</title>
       </Head>
 
-      <div className="min-h-screen bg-gray-50 text-gray-900">
+      <div className="mk-wrapper mk-body min-h-screen">
         <Header auth={auth} canLogin={canLogin} canRegister={canRegister} />
-        <main className="mx-auto max-w-6xl px-6 py-16">{children}</main>
+        <main className="mk-container" style={{ padding: '3.5rem 1rem' }}>{children}</main>
         <Footer />
       </div>
     </>

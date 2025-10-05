@@ -1,10 +1,13 @@
 export default function InputError({ message, className = '', ...props }) {
-    return message ? (
-        <p
-            {...props}
-            className={'text-sm text-red-600 ' + className}
-        >
-            {message}
-        </p>
-    ) : null;
+  if (!message) return null;
+
+  return (
+    <p
+      {...props}
+      className={`mk-input-error text-sm ${className}`}
+      role="alert"
+    >
+      {message}
+    </p>
+  );
 }

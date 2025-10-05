@@ -24,9 +24,13 @@ export default function Login({ status, canResetPassword, auth, canLogin, canReg
     <GuestLayout auth={auth} canLogin={canLogin} canRegister={canRegister}>
       <Head title="Iniciar sesión" />
 
-      {status && <div className="mb-4 text-sm font-medium text-green-600">{status}</div>}
+      {status && (
+        <div className="mb-4 text-sm" style={{ color: '#76c893' }}>
+          {status}
+        </div>
+      )}
 
-      <form onSubmit={submit}>
+      <form onSubmit={submit} className="space-y-6">
         <div>
           <InputLabel htmlFor="email" value="Correo electrónico" />
 
@@ -37,14 +41,14 @@ export default function Login({ status, canResetPassword, auth, canLogin, canReg
             value={data.email}
             className="mt-1 block w-full"
             autoComplete="username"
-            isFocused={true}
+            isFocused
             onChange={(e) => setData('email', e.target.value)}
           />
 
           <InputError message={errors.email} className="mt-2" />
         </div>
 
-        <div className="mt-4">
+        <div>
           <InputLabel htmlFor="password" value="Contraseña" />
 
           <TextInput
@@ -60,27 +64,29 @@ export default function Login({ status, canResetPassword, auth, canLogin, canReg
           <InputError message={errors.password} className="mt-2" />
         </div>
 
-        <div className="mt-4 block">
+        <div className="flex items-center justify-between">
           <label className="flex items-center">
             <Checkbox
               name="remember"
               checked={data.remember}
               onChange={(e) => setData('remember', e.target.checked)}
             />
-            <span className="ms-2 text-sm text-gray-600">Recordarme</span>
+            <span className="ms-2 text-sm" style={{ color: 'rgba(255,255,255,0.85)' }}>
+              Recordarme
+            </span>
           </label>
-        </div>
 
-        <div className="mt-4 flex items-center justify-end">
           {canResetPassword && (
             <Link
               href={route('password.request')}
-              className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              className="mk-link-button text-sm"
             >
               ¿Olvidaste tu contraseña?
             </Link>
           )}
+        </div>
 
+        <div className="flex items-center justify-end">
           <PrimaryButton className="ms-4" disabled={processing}>
             Iniciar sesión
           </PrimaryButton>

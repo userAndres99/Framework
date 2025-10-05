@@ -26,7 +26,7 @@ export default function Register({ auth, canLogin, canRegister }) {
         <title>Crear cuenta</title>
       </Head>
 
-      <form onSubmit={submit}>
+      <form onSubmit={submit} className="space-y-6">
         <div>
           <InputLabel htmlFor="name" value="Nombre" />
 
@@ -36,7 +36,7 @@ export default function Register({ auth, canLogin, canRegister }) {
             value={data.name}
             className="mt-1 block w-full"
             autoComplete="name"
-            isFocused={true}
+            isFocused
             onChange={(e) => setData('name', e.target.value)}
             required
           />
@@ -44,7 +44,7 @@ export default function Register({ auth, canLogin, canRegister }) {
           <InputError message={errors.name} className="mt-2" />
         </div>
 
-        <div className="mt-4">
+        <div>
           <InputLabel htmlFor="email" value="Correo electrónico" />
 
           <TextInput
@@ -61,7 +61,7 @@ export default function Register({ auth, canLogin, canRegister }) {
           <InputError message={errors.email} className="mt-2" />
         </div>
 
-        <div className="mt-4">
+        <div>
           <InputLabel htmlFor="password" value="Contraseña" />
 
           <TextInput
@@ -78,7 +78,7 @@ export default function Register({ auth, canLogin, canRegister }) {
           <InputError message={errors.password} className="mt-2" />
         </div>
 
-        <div className="mt-4">
+        <div>
           <InputLabel htmlFor="password_confirmation" value="Confirmar contraseña" />
 
           <TextInput
@@ -95,11 +95,11 @@ export default function Register({ auth, canLogin, canRegister }) {
           <InputError message={errors.password_confirmation} className="mt-2" />
         </div>
 
-        <div className="mt-4 flex items-center justify-end">
+        <div className="flex items-center justify-end">
           {canLogin && (
             <Link
               href={route('login')}
-              className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              className="mk-link-button text-sm"
             >
               ¿Ya tenés cuenta?
             </Link>

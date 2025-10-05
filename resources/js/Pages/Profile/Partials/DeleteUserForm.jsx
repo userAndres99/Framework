@@ -8,112 +8,87 @@ import { useForm } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 
 export default function DeleteUserForm({ className = '' }) {
-    const [confirmingUserDeletion, setConfirmingUserDeletion] = useState(false);
-    const passwordInput = useRef();
+  const [confirmingUserDeletion, setConfirmingUserDeletion] = useState(false);
+  const passwordInput = useRef();
 
-    const {
-        data,
-        setData,
-        delete: destroy,
-        processing,
-        reset,
-        errors,
-        clearErrors,
-    } = useForm({
-        password: '',
+  const {
+    data,
+    setData,
+    delete: destroy,
+    processing,
+    reset,
+    errors,
+    clearErrors,
+  } = useForm({
+    password: '',
+  });
+
+  const confirmUserDeletion = () => {
+    setConfirmingUserDeletion(true);
+  };
+
+  const deleteUser = (e) => {
+    e.preventDefault();
+
+    destroy(route('profile.destroy'), {
+      preserveScroll: true,
+      onSuccess: () => closeModal(),
+      onError: () => passwordInput.current?.focus(),
+      onFinish: () => reset(),
     });
+  };
 
-    const confirmUserDeletion = () => {
-        setConfirmingUserDeletion(true);
-    };
+  const closeModal = () => {
+    setConfirmingUserDeletion(false);
+    clearErrors();
+    reset();
+  };
 
-    const deleteUser = (e) => {
-        e.preventDefault();
+  return (
+    <section className={`space-y-6 ${className}`}>
+      <header>
+        <h2 className="mk-card-title">Eliminar cuenta</h2>
 
-        destroy(route('profile.destroy'), {
-            preserveScroll: true,
-            onSuccess: () => closeModal(),
-            onError: () => passwordInput.current.focus(),
-            onFinish: () => reset(),
-        });
-    };
+        <p className="mt-1 text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
+          Una vez eliminada tu cuenta, todos sus recursos y datos se eliminarán de forma permanente. Antes de eliminar tu cuenta, descarga cualquier dato que desees conservar.
+        </p>
+      </header>
 
-    const closeModal = () => {
-        setConfirmingUserDeletion(false);
-        clearErrors();
-        reset();
-    };
+      <DangerButton onClick={confirmUserDeletion}>Eliminar cuenta</DangerButton>
 
-    return (
-        <section className={`space-y-6 ${className}`}>
-            <header>
-                <h2 className="text-lg font-medium text-gray-900">
-                    Eliminar cuenta
-                </h2>
+      <Modal show={confirmingUserDeletion} onClose={closeModal}>
+        <form onSubmit={deleteUser} className="p-6">
+          <h2 className="mk-card-title">¿Estás seguro de que quieres eliminar tu cuenta?</h2>
 
-                <p className="mt-1 text-sm text-gray-600">
-                    Una vez eliminada tu cuenta, todos sus recursos y datos se
-                    eliminarán de forma permanente. Antes de eliminar tu cuenta,
-                    por favor descarga cualquier dato o información que desees
-                    conservar.
-                </p>
-            </header>
+          <p className="mt-1 text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            Ingresa tu contraseña para confirmar que deseas eliminar tu cuenta de forma permanente.
+          </p>
 
-            <DangerButton onClick={confirmUserDeletion}>
-                Eliminar cuenta
-            </DangerButton>
+          <div className="mt-6">
+            <InputLabel htmlFor="password" value="Contraseña" className="mk-hidden-visually" />
 
-            <Modal show={confirmingUserDeletion} onClose={closeModal}>
-                <form onSubmit={deleteUser} className="p-6">
-                    <h2 className="text-lg font-medium text-gray-900">
-                        ¿Estás seguro de que quieres eliminar tu cuenta?
-                    </h2>
+            <TextInput
+              id="password"
+              type="password"
+              name="password"
+              ref={passwordInput}
+              value={data.password}
+              onChange={(e) => setData('password', e.target.value)}
+              className="mt-1 block w-full"
+              isFocused
+              placeholder="Contraseña"
+            />
 
-                    <p className="mt-1 text-sm text-gray-600">
-                        Una vez eliminada tu cuenta, todos sus recursos y datos
-                        se eliminarán de forma permanente. Por favor, ingresa tu
-                        contraseña para confirmar que deseas eliminar tu cuenta
-                        permanentemente.
-                    </p>
+            <InputError message={errors.password} className="mt-2" />
+          </div>
 
-                    <div className="mt-6">
-                        <InputLabel
-                            htmlFor="password"
-                            value="Contraseña"
-                            className="sr-only"
-                        />
+          <div className="mt-6 flex justify-end">
+            <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>
 
-                        <TextInput
-                            id="password"
-                            type="password"
-                            name="password"
-                            ref={passwordInput}
-                            value={data.password}
-                            onChange={(e) =>
-                                setData('password', e.target.value)
-                            }
-                            className="mt-1 block w-3/4"
-                            isFocused
-                            placeholder="Contraseña"
-                        />
-
-                        <InputError
-                            message={errors.password}
-                            className="mt-2"
-                        />
-                    </div>
-
-                    <div className="mt-6 flex justify-end">
-                        <SecondaryButton onClick={closeModal}>
-                            Cancelar
-                        </SecondaryButton>
-
-                        <DangerButton className="ms-3" disabled={processing}>
-                            Eliminar cuenta
-                        </DangerButton>
-                    </div>
-                </form>
-            </Modal>
-        </section>
-    );
+            <DangerButton className="ms-3" disabled={processing}>Eliminar cuenta</DangerButton>
+          </div>
+        </form>
+      </Modal>
+    </section>
+  );
 }

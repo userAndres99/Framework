@@ -11,18 +11,17 @@ export default function Home({ auth, canLogin, canRegister }) {
         <link rel="preload" as="image" href="/images/Hero.jpg" />
       </Head>
 
-      <div className="mx-auto max-w-6xl px-6 py-16">
+      <div className="mk-container" style={{ padding: '3.5rem 1rem' }}>
         <Hero
           title="Huellas Solidarias"
           subtitle="Plataforma para reportar y coordinar rescates, adopciones y reencuentros de mascotas."
           imageClass="w-full h-[720px] md:h-[920px] lg:h-[500px] object-cover"
-
         >
           <div className="mt-6 flex gap-3">
             <Link
               href={route('register')}
               aria-label="Quiero empezar a ayudar — crear cuenta"
-              className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-white text-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="mk-btn mk-btn-primary inline-flex items-center text-sm"
             >
               Quiero empezar a ayudar
             </Link>
@@ -30,7 +29,7 @@ export default function Home({ auth, canLogin, canRegister }) {
             <Link
               href={route('login')}
               aria-label="Ya tengo cuenta — iniciar sesión"
-              className="inline-flex items-center rounded-md border px-4 py-2 text-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              className="mk-btn mk-btn-outline inline-flex items-center text-sm"
             >
               Ya tengo cuenta
             </Link>
