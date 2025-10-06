@@ -3,6 +3,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
 
+const FALLBACK_POST_IMAGE = '/images/placeholder-post.jpg'; 
+
 export default function Index({ posts = [] }) {
   const [reacciones, setReacciones] = useState(
     posts.reduce((acc, post) => { acc[post.id] = post.reacciones ? post.reacciones.length : 0; return acc; }, {})
@@ -45,6 +47,10 @@ export default function Index({ posts = [] }) {
     }
   };
 
+  const handleImgError = (e) => {
+    e.currentTarget.src = FALLBACK_POST_IMAGE;
+  };
+
   return (
     <AuthenticatedLayout>
       <Head title="Blog" />
@@ -64,39 +70,58 @@ export default function Index({ posts = [] }) {
         )}
 
         {posts.map((post) => (
-          <div key={post.id} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition p-6">
+          <article key={post.id} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition p-6">
             <div className="flex items-center mb-4">
               <img
-                src={post.user.profile_photo_url || '/images/DefaultPerfil.jpg'}
-                alt={post.user.name}
-                className="w-10 h-10 rounded-full mr-3 border border-gray-300"
+                src={post.user?.profile_photo_url || '/images/DefaultPerfil.jpg'}
+                alt={post.user?.name || 'Usuario'}
+                className="w-10 h-10 rounded-full mr-3 border border-gray-300 object-cover"
+                onError={(e) => { e.currentTarget.src = '/images/DefaultPerfil.jpg'; }}
               />
               <div>
-                <p className="font-semibold text-gray-800">{post.user.name}</p>
+                <p className="font-semibold text-gray-800">{post.user?.name || 'Anónimo'}</p>
                 <p className="text-sm text-gray-500">{new Date(post.created_at).toLocaleDateString()}</p>
               </div>
             </div>
 
+            {post.imagen_url && (
+              <div className="mb-4 w-full overflow-hidden rounded-lg bg-gray-100">
+                <img
+                  src={post.imagen_url}
+                  alt={post.titulo}
+                  onError={handleImgError}
+                  loading="lazy"
+                  className="w-full h-64 object-contain bg-gray-100 rounded-lg mb-4"
+                  //className="w-full h-64 sm:h-72 md:h-80 lg:h-96 object-cover block"
+                />
+              </div>
+            )}
+
             <h2 className="text-2xl font-bold text-gray-900 mb-2">{post.titulo}</h2>
             <p className="text-gray-700 mb-4 whitespace-pre-line">{post.contenido}</p>
 
-            <button
-              onClick={() => reaccionar(post.id)}
-              className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md transition"
-            >
-              👍 Me gusta ({reacciones[post.id] ?? 0})
-            </button>
+            <div className="flex items-center gap-3 mb-4">
+              <button
+                onClick={() => reaccionar(post.id)}
+                className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md transition"
+                aria-label={`Me gusta ${post.titulo}`}
+              >
+                👍 Me gusta ({reacciones[post.id] ?? 0})
+              </button>
+              <Link href={`/blog/${post.id}`} className="text-sm text-gray-600 hover:underline">Ver publicación</Link>
+            </div>
 
             <div className="mt-6 space-y-3">
               {(comentarios[post.id] || []).map((c) => (
                 <div key={c.id} className="flex items-start gap-3 bg-gray-50 p-3 rounded-xl shadow-sm">
                   <img
-                    src={c.user.profile_photo_url || '/images/DefaultPerfil.jpg'}
-                    alt={c.user.name}
-                    className="w-8 h-8 rounded-full border border-gray-300"
+                    src={c.user?.profile_photo_url || '/images/DefaultPerfil.jpg'}
+                    alt={c.user?.name || 'Usuario'}
+                    className="w-8 h-8 rounded-full border border-gray-300 object-cover"
+                    onError={(e) => { e.currentTarget.src = '/images/DefaultPerfil.jpg'; }}
                   />
                   <div>
-                    <p className="text-sm font-semibold text-gray-800">{c.user.name}</p>
+                    <p className="text-sm font-semibold text-gray-800">{c.user?.name || 'Anónimo'}</p>
                     <p className="text-gray-700 text-sm">{c.contenido}</p>
                   </div>
                 </div>
@@ -120,7 +145,7 @@ export default function Index({ posts = [] }) {
                 Enviar
               </button>
             </form>
-          </div>
+          </article>
         ))}
       </div>
     </AuthenticatedLayout>

@@ -1,17 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-import { useForm, router } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 
 export default function CreatePost() {
-  const { data, setData, processing, errors, reset } = useForm({
+  const { data, setData, processing, errors, reset, post } = useForm({
     titulo: '',
     contenido: '',
+    imagen: null,
   });
+
+  const [preview, setPreview] = useState(null);
+
+  // Generar/revocar preview cuando cambia data.imagen
+  useEffect(() => {
+    if (!data.imagen) {
+      setPreview(null);
+      return;
+    }
+    const objectUrl = URL.createObjectURL(data.imagen);
+    setPreview(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [data.imagen]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0] ?? null;
+    setData('imagen', file);
+  };
+
+  const removeImage = () => {
+    setData('imagen', null);
+    setPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    router.post('/blog', data, {
+    post('/blog', {
       onSuccess: () => reset(),
     });
   };
@@ -33,7 +59,7 @@ export default function CreatePost() {
                 value={data.titulo}
                 onChange={(e) => setData('titulo', e.target.value)}
                 placeholder="Título de la publicación..."
-                className="w-full border border-gray-300 rounded-2xl px-5 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-sm text-gray-800 placeholder-gray-400"
+                className="w-full border border-gray-300 rounded-2xl px-5 py-3"
               />
               {errors.titulo && <p className="text-red-500 text-sm mt-1">{errors.titulo}</p>}
             </div>
@@ -43,17 +69,48 @@ export default function CreatePost() {
                 value={data.contenido}
                 onChange={(e) => setData('contenido', e.target.value)}
                 placeholder="Escribe tu contenido..."
-                className="w-full border border-gray-300 rounded-2xl px-5 py-3 h-40 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-sm text-gray-800 placeholder-gray-400"
+                className="w-full border border-gray-300 rounded-2xl px-5 py-3 h-40 resize-none"
               />
               {errors.contenido && <p className="text-red-500 text-sm mt-1">{errors.contenido}</p>}
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Imagen (opcional)</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full"
+              />
+              {errors.imagen && <p className="text-red-500 text-sm mt-1">{errors.imagen}</p>}
+            </div>
+
+            {preview && (
+              <div className="mt-3">
+                <div className="relative inline-block">
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="w-full max-h-64 object-cover rounded-lg border"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute top-2 right-2 bg-white bg-opacity-80 rounded-full p-1 shadow"
+                    aria-label="Eliminar imagen"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={processing}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-2xl shadow-lg transition flex justify-center items-center gap-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-2xl"
             >
-              Publicar
+              {processing ? 'Publicando...' : 'Publicar'}
             </button>
           </form>
         </div>
