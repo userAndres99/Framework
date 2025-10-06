@@ -5,8 +5,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\CasoController;
-use App\Models\Caso;
-
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ComentarioController;
 use App\Http\Controllers\ReaccionController;
@@ -30,35 +28,30 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-
-
-
-
 Route::middleware(['auth'])->group(function () {
+    // Casos
     Route::get('/casos', function () {
-        return Inertia::render('Casos'); // Esto renderiza tu componente React
+        return Inertia::render('Casos');
     })->name('casos');
+
+    Route::get('/casos/publicaciones', function () {
+        return Inertia::render('CasosPublicaciones');
+    })->name('casos.publicaciones');
 
     Route::get('/casos/lista', [CasoController::class, 'index'])->name('casos.lista');
     Route::post('/casos/crear', [CasoController::class, 'store'])->name('casos.crear');
+
+    // Blog (posts) - nombres normalizados a blog.*
+    Route::get('/blog', [PostController::class, 'index'])->name('blog.index');
+    Route::get('/blog/create', [PostController::class, 'create'])->name('blog.create');
+    Route::post('/blog', [PostController::class, 'store'])->name('blog.store');
+    Route::get('/blog/{post}/edit', [PostController::class, 'edit'])->name('blog.edit');
+    Route::put('/blog/{post}', [PostController::class, 'update'])->name('blog.update');
+    Route::delete('/blog/{post}', [PostController::class, 'destroy'])->name('blog.destroy');
+
+    // Comentarios y reacciones
+    Route::post('/blog/{post}/comentarios', [ComentarioController::class, 'store'])->name('blog.comentarios.store');
+    Route::post('/blog/{post}/reacciones', [ReaccionController::class, 'store'])->name('blog.reacciones.store');
 });
 
-
-
-
-
-Route::middleware(['auth']) -> group(function(){
-    Route::get('/blog', [PostController::class, 'index'])->name('posts.index'); //listado de post
-    Route::get('/blog/create', [PostController::class, 'create'])->name('posts.create');// formulario crear
-    Route::post('/blog', [PostController::class, 'store'])->name('posts.store'); //guardar post
-    Route::get('/blog/{post}/edit', [PostController::class, 'edit'])->name('posts.edit'); //editar post
-    Route::put('/blog/{post}', [PostController::class, 'update'])->name('posts.update');//actualizar post
-    Route::delete('/blog/{post}', [PostController::class, 'destroy'])-> name('posts.destroy'); // borrar post
-
-    //Comentarios
-    Route::post('/blog/{post}/comentarios', [ComentarioController::class, 'store'])->name('comentarios.store');
-
-    // Reacciones
-    Route::post('/blog/{post}/reacciones', [ReaccionController::class, 'store'])->name('reacciones.store');
-});
 require __DIR__.'/auth.php';

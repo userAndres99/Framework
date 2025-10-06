@@ -24,6 +24,17 @@ export default function AuthenticatedLayout({ header, children }) {
 
             <div className="hidden sm:flex" style={{ marginLeft: 24 }}>
               <NavLink href={route('dashboard')} active={route().current('dashboard')}>Dashboard</NavLink>
+
+              <NavLink href={route('casos')} active={route().current('casos')}>
+                Publicar caso
+              </NavLink>
+              <NavLink href={route('casos.publicaciones')} active={route().current('casos.publicaciones')}>
+                Ver publicaciones
+              </NavLink>
+
+              <NavLink href={route('blog.index')} active={route().current('blog.index')}>
+                Blog
+              </NavLink>
             </div>
           </div>
 
@@ -67,6 +78,17 @@ export default function AuthenticatedLayout({ header, children }) {
         <div id="mobile-menu" className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
           <div className="space-y-1 pb-3 pt-2">
             <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>Dashboard</ResponsiveNavLink>
+
+            <ResponsiveNavLink href={route('casos')} active={route().current('casos')}>
+              Publicar caso
+            </ResponsiveNavLink>
+            <ResponsiveNavLink href={route('casos.publicaciones')} active={route().current('casos.publicaciones')}>
+              Ver publicaciones
+            </ResponsiveNavLink>
+
+            <ResponsiveNavLink href={route('blog.index')} active={route().current('blog.index')}>
+              Blog
+            </ResponsiveNavLink>
           </div>
 
           <div className="border-t" style={{ borderColor: 'rgba(255,255,255,0.04)' }}>

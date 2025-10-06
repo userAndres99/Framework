@@ -1,99 +1,150 @@
-import React, { useState } from "react";
-import MapaInteractivo from "./MapaInteractivo";
+import React, { useState } from 'react';
+import MapaInteractivo from './MapaInteractivo';
 
 export default function FormCasos({ onCasoCreado }) {
   const [descripcion, setDescripcion] = useState('');
   const [lat, setLat] = useState('');
   const [lng, setLng] = useState('');
-  const [mostrarMapa, setMostrarMapa] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
   const [mensaje, setMensaje] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
+    setMensaje('');
+    setErrors({});
 
     if (!descripcion || !lat || !lng) {
-      setMensaje("Por favor completá todos los campos y seleccioná la ubicación.");
+      setMensaje('Completá la descripción y seleccioná la ubicación.');
       return;
     }
 
-    const datos = { Descripcion: descripcion, Latitud: parseFloat(lat), Longitud: parseFloat(lng) };
-
+    setLoading(true);
     try {
-      const res = await fetch("/casos/crear", {
-        method: "POST",
-        headers: { "Content-Type": "application/json",
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-         },
-        credentials: "include",
-        
-        body: JSON.stringify(datos)
+      const payload = {
+        Descripcion: descripcion,
+        Latitud: parseFloat(lat),
+        Longitud: parseFloat(lng),
+      };
+      const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+      const res = await fetch('/casos/crear', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': token,
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify(payload),
       });
 
-      if (res.headers.get("content-type")?.includes("text/html")) {
-        throw new Error("Usuario no autenticado o sesión expirada");
-      }
+      const json = await res.json().catch(() => null);
 
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Error al registrar el caso ❌");
+        if (json?.errors) {
+          setErrors(json.errors);
+          setMensaje('Hay errores en el formulario.');
+        } else {
+          setMensaje(json?.message || 'Error al registrar el caso');
+        }
+        return;
       }
 
-      const data = await res.json();
-      setMensaje("Caso registrado correctamente ✅");
+      setMensaje('Caso registrado correctamente ✅');
       setDescripcion('');
       setLat('');
       setLng('');
-
-      if (onCasoCreado) onCasoCreado(data);
-
-    } catch (error) {
-      console.error(error);
-      setMensaje(error.message);
+      if (onCasoCreado) onCasoCreado(json);
+      setTimeout(() => setMensaje(''), 3000);
+    } catch (err) {
+      console.error(err);
+      setMensaje(err.message || 'Error desconocido');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleLocationSelect = (coords) => {
+    if (Array.isArray(coords)) {
+      setLat(String(coords[0]));
+      setLng(String(coords[1]));
+    } else if (coords && typeof coords === 'object') {
+      setLat(String(coords.lat ?? ''));
+      setLng(String(coords.lng ?? ''));
+    }
+    setShowMapModal(false);
+  };
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-b from-emerald-50 to-white">
-      <div className="w-full max-w-lg bg-white shadow-2xl rounded-2xl p-8 md:p-12 border border-emerald-100">
-        <h2 className="text-3xl font-bold mb-6 text-emerald-700 text-center">Registrar Caso</h2>
+    <div className="mk-card mk-card-elevated formcasos-card">
+      <h3 className="mk-card-title">Publicar caso</h3>
 
-        {mensaje && <div className="mb-4 p-3 rounded bg-emerald-100 text-emerald-800 text-center font-medium">{mensaje}</div>}
+      {mensaje && (
+        <div className="mk-alert mk-alert-info formcasos-alert">
+          <span>{mensaje}</span>
+          <button className="mk-link-button" onClick={() => setMensaje('')}>✕</button>
+        </div>
+      )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="flex flex-col">
-            <label className="mb-2 font-semibold text-gray-700">Descripción:</label>
-            <input type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)}
-              placeholder="Ej: Perro perdido en el parque"
-              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-            />
+      <form onSubmit={submit} className="formcasos-form">
+        <div className="form-row">
+          <label className="mk-label">Descripción</label>
+          <textarea
+            className="mk-input mk-textarea"
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
+            placeholder="Ej: Perro perdido, color marrón, coletero rojo, visto en Av. Corrientes"
+            rows={5}
+            aria-invalid={!!errors.Descripcion}
+          />
+          {errors.Descripcion && <div className="mk-error">{errors.Descripcion[0]}</div>}
+        </div>
+
+        <div className="form-row grid-2">
+          <div>
+            <label className="mk-label">Latitud</label>
+            <input type="text" className="mk-input" value={lat} readOnly placeholder="Seleccionar en el mapa" />
+            {errors.Latitud && <div className="mk-error">{errors.Latitud[0]}</div>}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label className="mb-2 font-semibold text-gray-700">Latitud:</label>
-              <input type="text" value={lat} readOnly className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100" placeholder="Seleccionar en el mapa"/>
+          <div>
+            <label className="mk-label">Longitud</label>
+            <input type="text" className="mk-input" value={lng} readOnly placeholder="Seleccionar en el mapa" />
+            {errors.Longitud && <div className="mk-error">{errors.Longitud[0]}</div>}
+          </div>
+        </div>
+
+        <div className="form-actions">
+          <button
+            type="button"
+            onClick={() => setShowMapModal(true)}
+            className="mk-button secondary"
+            disabled={loading}
+          >
+            {showMapModal ? 'Ocultar mapa' : 'Seleccionar ubicación'}
+          </button>
+
+          <button type="submit" className="mk-button primary" disabled={loading}>
+            {loading ? 'Publicando...' : 'Publicar caso'}
+          </button>
+        </div>
+      </form>
+
+      {showMapModal && (
+        <div className="mk-modal-backdrop" role="dialog" aria-modal="true" onClick={() => setShowMapModal(false)}>
+          <div className="mk-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="mk-modal-header">
+              <strong>Seleccionar ubicación</strong>
+              <button className="mk-link-button" onClick={() => setShowMapModal(false)}>Cancelar</button>
             </div>
-            <div className="flex flex-col">
-              <label className="mb-2 font-semibold text-gray-700">Longitud:</label>
-              <input type="text" value={lng} readOnly className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100" placeholder="Seleccionar en el mapa"/>
+            <div className="mk-modal-body">
+              <MapaInteractivo onLocationSelect={handleLocationSelect} initialCenter={lat && lng ? [parseFloat(lat), parseFloat(lng)] : null} />
             </div>
           </div>
-
-          <div className="flex flex-col md:flex-row gap-4 justify-between">
-            <button type="button" onClick={() => setMostrarMapa(!mostrarMapa)}
-              className="flex-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition font-semibold">
-              {mostrarMapa ? "Ocultar mapa" : "Seleccionar Ubicación"}
-            </button>
-            <button type="submit" className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition font-semibold">Enviar</button>
-          </div>
-        </form>
-
-        {mostrarMapa && (
-          <div className="mt-6 h-64 border border-emerald-200 rounded-lg overflow-hidden">
-            <MapaInteractivo onLocationSelect={(coords) => { setLat(coords[0]); setLng(coords[1]); setMostrarMapa(false); }} />
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -5,15 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Auth;
-
 
 class PostController extends Controller
 {
     public function index()
     {
         $posts = Post::with(['user', 'comentarios.user', 'reacciones.user'])->latest()->get();
-
         return Inertia::render('Blog/Index', ['posts' => $posts]);
     }
 
@@ -30,12 +27,12 @@ class PostController extends Controller
         ]);
 
         Post::create([
-            'user_id' => Auth::id(),
+            'user_id' => $request->user()->id,
             'titulo' => $request->titulo,
             'contenido' => $request->contenido,
         ]);
 
-        return redirect()->route('posts.index')->with('success', 'Publicación creada correctamente');
+        return redirect()->route('blog.index')->with('success', 'Publicación creada correctamente');
     }
 
     public function show(Post $post)
@@ -61,13 +58,13 @@ class PostController extends Controller
 
         $post->update($request->only('titulo', 'contenido'));
 
-        return redirect()->route('posts.index')->with('success', 'Publicación actualizada');
+        return redirect()->route('blog.index')->with('success', 'Publicación actualizada');
     }
 
     public function destroy(Post $post)
     {
         $this->authorize('delete', $post);
         $post->delete();
-        return redirect()->route('posts.index')->with('success', 'Publicación eliminada');
+        return redirect()->route('blog.index')->with('success', 'Publicación eliminada');
     }
 }
