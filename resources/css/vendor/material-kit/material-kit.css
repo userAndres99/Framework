@@ -287,6 +287,89 @@ body.modal-open { overflow: hidden; }
 .mk-alert-info { background:#ecfdf5; color:#065f46; border:1px solid #d1fae5; }
 .mk-link-button { background:transparent; border:none; color:inherit; cursor:pointer; font-weight:600; }
 
+:root{
+  --mk-panel-bg: #e6f2f8;    
+  --mk-panel-bg-2: #eaf6f0;  
+  --mk-panel-text: #06323a;  
+  --mk-panel-border: rgba(6,34,42,0.06);
+}
+
+.mk-casos-panel {
+  background: linear-gradient(180deg, var(--mk-panel-bg), color-mix(in srgb, var(--mk-panel-bg), #ffffff 8%));
+  color: var(--mk-panel-text);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+  border: 1px solid var(--mk-panel-border);
+}
+
+.mk-casos-panel--green {
+  background: linear-gradient(180deg, var(--mk-panel-bg-2), color-mix(in srgb, var(--mk-panel-bg-2), #ffffff 8%));
+  color: var(--mk-panel-text);
+}
+
+.mk-caso-item {
+  background: color-mix(in srgb, var(--mk-panel-bg), #ffffff 14%);
+  color: var(--mk-panel-text);
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid rgba(6,34,42,0.06);
+  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+  transition: transform .14s ease, box-shadow .14s ease;
+}
+.mk-caso-item:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(2,6,23,0.06); }
+
+
+.mk-casos-title { color: var(--mk-panel-text); font-weight: 700; font-size: 1.05rem; }
+.mk-casos-count, .mk-caso-meta, .mk-caso-author { color: color-mix(in srgb, var(--mk-panel-text), #000000 70%); }
+
+
+@media (max-width: 768px) {
+  .mk-casos-panel { padding: 10px; border-radius: 10px; }
+  .mk-caso-item { padding: 8px; }
+}
+
+.max-w-2xl input[type="text"],
+.max-w-2xl textarea,
+.max-w-2xl input[type="file"],
+.max-w-2xl .ProseMirror, 
+.max-w-2xl select {
+  color: #06222a !important;            
+  background: #ffffff !important;       
+  border-color: rgba(6,34,42,0.08) !important;
+}
+
+.max-w-2xl input::placeholder,
+.max-w-2xl textarea::placeholder {
+  color: #6b7280 !important;
+}
+
+.max-w-2xl input,
+.max-w-2xl textarea {
+  -webkit-text-fill-color: #06222a !important;
+}
+
+.max-w-2xl .relative button {
+  color: #06222a !important;
+  background: rgba(255,255,255,0.9) !important;
+}
+
+.max-w-2xl input:focus,
+.max-w-2xl textarea:focus {
+  outline: 3px solid rgba(34,139,230,0.14) !important;
+  box-shadow: 0 6px 20px rgba(34,139,230,0.08) !important;
+}
+
+.max-w-4xl input[type="text"],
+.max-w-4xl textarea,
+.max-w-4xl input[type="search"],
+.max-w-4xl select {
+  background: #ffffff !important;
+  color: #05263a !important;
+  border-color: rgba(6,34,42,0.12) !important;
+  -webkit-text-fill-color: #05263a !important;
+}
+
 /* Card y layout */
 .formcasos-card { max-width: 880px; margin: 28px auto; padding: 22px; border-radius: 12px; background: #ffffff; box-shadow: 0 10px 30px rgba(2,6,23,0.06); }
 .formcasos-alert { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-radius:8px; background:#ecfdf5; color:#065f46; margin-bottom:14px; }
